@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>水果列表</title>
+</head>
+<body>
+<form method="get">
+    <input name="p1" value="{% if p1 %} {{ p1 }} {% else %} 0 {% endif %}">
+    <input name="p2" value="{% if p2 %} {{ p2 }} {% else %} 100 {% endif %}">
+    <button>search</button>
+</form>
+<ul>
+    {% for fruit in fruits %}
+        <li>
+            {{ fruit.name }} - {{ fruit.price }}
+        </li>
+    {% endfor %}
+</ul>
+</body>
+</html>
