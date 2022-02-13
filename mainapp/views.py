@@ -1,8 +1,12 @@
+import random
+
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.db.models import Count, Sum, Min, Max, Avg, F, Q
 
 # Create your views here.
+from django.template import loader
+
 from mainapp.models import User, Fruit, Store
 from orderapp.models import Order
 
@@ -39,6 +43,28 @@ def user_list3(request):
     return render(request,
                   'user/list.html',
                   locals())
+
+
+def user_list4(request):
+    users = User.objects.all()
+    msg = '最优秀的同学'
+    error_index = random.randint(0, users.count()-1)
+    vip = {
+        'name': 'shi',
+        'money': 20000
+    }
+
+    # # 加载模板
+    # template = loader.get_template('user/list.html')
+    #
+    # # 渲染模板
+    # html = template.render(context={
+    #     'msg': msg,
+    #     'users': users
+    # })
+    html = loader.render_to_string('user/list.html', locals(), request)
+
+    return HttpResponse(html, status=200)
 
 
 def add_user(request):

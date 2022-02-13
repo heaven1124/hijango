@@ -120,6 +120,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# 配置静态资源访问目录
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 
 # 上传文件URL
 MEDIA_URL = 'media/'
