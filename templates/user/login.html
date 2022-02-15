@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登陆</title>
+    {% include 'base_css.html' %}
+</head>
+<body>
+<div class="container">
+    <form class="form" method="post">
+{#        在<form>内部使用，会生成隐藏字段，名称为csrfmiddlewaretoken，它的值是在渲染模板时产生，#}
+{#        并存储在session中，当表单提交后，csrfmiddleware中间件通过这个值验证登陆者的身份(只针对post请求)#}
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="col-xl-3">口令</label>
+            <div class="form-control col-xl-8">
+                <input name="name" placeholder="用户名" value="{{ name }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xl-3">口令</label>
+            <div class="form-control col-xl-8">
+                <input name="password" type="password" placeholder="口令">
+            </div>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary">登陆</button>
+            <a class="btn btn-link" href="/user/regist">去注册</a>
+        </div>
+    </form>
+    <p class="text-danger">
+        {{ error_msg|safe }}
+    </p>
+</div>
+</body>
+</html>

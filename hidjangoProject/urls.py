@@ -23,17 +23,15 @@ from django.conf.urls.static import static
 
 # 声明views处理函数
 def index(request: HttpRequest):
-    users = [{'id': 1, 'name': 'sl'},
-             {'id': 2, 'name': 'zh'},
-             {'id': 3, 'name': 'wj'},
-            ]
+
     # return HttpResponse('<h1>hi, django</h1>'.encode('utf-8'))
-    return render(request, 'index.html', {'users': users, 'msg': 'all msgs'})
+    return render(request, 'index.html', locals())
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index),
     # 配置子路由，include导入urls.py中所有子路由
-    path('user/', include('mainapp.urls'))
+    path('user/', include('mainapp.urls')),
+    path('order/', include('orderapp.urls', namespace='order')),
+    path('', index),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

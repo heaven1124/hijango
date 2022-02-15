@@ -1,4 +1,6 @@
+import os
 import random
+from datetime import datetime
 
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -7,6 +9,7 @@ from django.db.models import Count, Sum, Min, Max, Avg, F, Q
 # Create your views here.
 from django.template import loader
 
+from hidjangoProject import settings
 from mainapp.models import User, Fruit, Store
 from orderapp.models import Order
 
@@ -33,7 +36,7 @@ def user_list2(request):
     ]
     msg = '最优秀的同学'
     return render(request,
-                  'user/list.html',
+                  'list.html',
                   locals())
 
 
@@ -48,14 +51,24 @@ def user_list3(request):
 def user_list4(request):
     users = User.objects.all()
     msg = '最优秀的同学'
-    error_index = random.randint(0, users.count()-1)
+    error_index = random.randint(0, users.count() - 1)
     vip = {
         'name': 'shi',
         'money': 20000
     }
+    info = '<h3>user info</h3>'
+    now = datetime.now()
 
+    file_dir = os.path.join(settings.BASE_DIR, 'mainapp/')
+    files = {file_name: os.stat(file_dir + file_name)
+             for file_name in os.listdir(file_dir)
+             if os.path.isfile(file_dir + file_name)}
+
+    price = 19.1356
+
+    img_html = "<img width=100 height=100 src='/media/store/default.jpg'/>"
     # # 加载模板
-    # template = loader.get_template('user/list.html')
+    # template = loader.get_template('user/list_order.html')
     #
     # # 渲染模板
     # html = template.render(context={
@@ -92,7 +105,7 @@ def update_user(request):
         user = User.objects.get(pk=int(id))
         name = request.GET.get('name', None)
         phone = request.GET.get('phone', None)
-        if any((name, phone)): # name,phone任意一个存在
+        if any((name, phone)):  # name,phone任意一个存在
             if name:
                 user.name = name
             if phone:
@@ -130,10 +143,10 @@ def find_fruit(request):
     p1 = request.GET.get('p1', 0)
     p2 = request.GET.get('p2', 100)
 
-    fruits = Fruit.objects.filter(price__gte=p1, price__lte=p2)\
-        .exclude(price=250)\
-        .filter(name__contains='果')\
-        .filter(price__in=(0, 5))\
+    fruits = Fruit.objects.filter(price__gte=p1, price__lte=p2) \
+        .exclude(price=250) \
+        .filter(name__contains='果') \
+        .filter(price__in=(0, 5)) \
         .all()
     return render(request, 'fruit/list.html', locals())
 
@@ -181,7 +194,8 @@ def count_fruit(request):
     fruits = Fruit.objects.values()
 
     # 查询价格低于10，或者高于100，或原产地是西藏且名字中包含“果”的水果
-    fruits2 = Fruit.objects.filter(Q(price__gte=100) | Q(price__lte=10) | Q(Q(source='西藏') & Q(name__contains="果"))).values()
+    fruits2 = Fruit.objects.filter(
+        Q(price__gte=100) | Q(price__lte=10) | Q(Q(source='西藏') & Q(name__contains="果"))).values()
 
     # 使用原生SQL查询，包括raw()函数和extra()函数两种方式
     # fruits3 = Fruit.objects.raw('select id, name, price from t_fruit where price < %s order by price DESC LIMIT %s, 10', (10, 0))
@@ -192,7 +206,7 @@ def count_fruit(request):
     # curor = connection.cursor()
     # curor.excute('select * from t_fruit')
     # for row in curor.fetchall():
-        # print(row)
+    # print(row)
     # curor.rowcount, 统计影响行数
     # connection.commit()
     return JsonResponse({
@@ -200,9 +214,9 @@ def count_fruit(request):
         # QuerySet<{},{},{}>可迭代对象，里面的每一条数据都是一个字典对象
         'fruits': [fruit for fruit in fruits],
         'fruits2': [fruit for fruit in fruits2],
-        #'fruits4': [fruit for fruit in fruits4],
-        #'fruits3': [fruit for fruit in fruits3],
-        #'fruits5': [fruit for fruit in fruits5]
+        # 'fruits4': [fruit for fruit in fruits4],
+        # 'fruits3': [fruit for fruit in fruits3],
+        # 'fruits5': [fruit for fruit in fruits5]
     })
 
 

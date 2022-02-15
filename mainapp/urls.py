@@ -1,9 +1,11 @@
 from django.urls import path
 from mainapp.views import delete_user, update_user, user_list3, add_user, find_fruit, find_store, all_store, \
-    count_fruit, count_order, user_list4
+    count_fruit, count_order, user_list4, user_list2
+from mainapp import user_v
+
 
 urlpatterns = [
-    path('list', user_list4),
+    path('list', user_list2),
     path('add', add_user),
     path('update', update_user),
     path('del', delete_user),
@@ -12,4 +14,5 @@ urlpatterns = [
     path('store_all', all_store),
     path('count', count_fruit),
     path('count_order', count_order),
+    path('login', user_v.login),
 ]

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3 style="color: red">
+        sorry, the requested resource {{ request_path }} does not exist
+        <br>
+        <script>
+            document.write(window.location.href)
+        </script>
+    </h3>
+    <p>
+        3秒后自动跳转到<a href="/">主页</a>
+    </p>
+{% endblock %}

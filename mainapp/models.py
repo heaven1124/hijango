@@ -1,8 +1,28 @@
+import re
 import uuid
 
+from django.contrib.auth.hashers import make_password
 from django.db import models
-
+from django.core.exceptions import ValidationError
 # Create your models here.
+
+
+# 自定义Manager类，用来创建objects对象
+class UserManager(models.Manager):
+    def update(self, **kwargs):
+        password = kwargs.get('password', None)
+        if password and len(password) < 50:
+            kwargs['password'] = make_password(password)
+        super(UserManager, self).update(**kwargs)
+
+
+# 验证类，验证模型字段是否符合要求
+class UserValidator:
+    @classmethod
+    def valid_phone(self, value):
+        if not re.match(r'1[1-57-9]\d{9}', value):
+            raise ValidationError('phone format is not correct')
+        return True
 
 
 class User(models.Model):
@@ -10,9 +30,27 @@ class User(models.Model):
     name = models.CharField(max_length=20,
                             verbose_name='账号') # 后台管理显示的名称
     age = models.IntegerField(default=0, verbose_name='年龄')
-    phone = models.CharField(max_length=11, verbose_name='手机号',
+    phone = models.CharField(max_length=11,
+                             verbose_name='手机号',
+                             # 指定验证类，和验证方法
+                             validators=[UserValidator.valid_phone],
                              blank=True, # 后台管理界面添加字段可以为空
                              null=True)  # 数据库的字段可以是null
+    password = models.CharField(max_length=100,
+                                verbose_name='口令',
+                                blank=True,  # 后台管理界面添加字段可以为空
+                                null=True)
+    objects = UserManager()
+
+    # 重写save方法，密码加密
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        # 密码长度小于50，未加密
+        if len(self.password) < 50:
+            # 明文转密文
+            self.password = make_password(self.password)
+
+        super().save()
 
     def __str__(self):
         return self.name

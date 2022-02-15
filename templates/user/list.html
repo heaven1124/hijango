@@ -4,9 +4,26 @@
     <meta charset="UTF-8">
     <title>主页</title>
     {% include 'base_css.html' %}
+    <style>
+        .even{
+            background-color: lightgoldenrodyellow;
+        }
+        .red{
+            background-color: red;
+        }
+        .blue{
+            background-color: blue;
+        }
+        .green{
+            background-color: green;
+        }
+    </style>
 </head>
-<body>
+<body class="container">
 <h3>{{ msg }}</h3>
+<p>
+    当前登陆用户: {{ request.session.login_user.name }}
+</p>
 <p style="color: green">
     the third user : {{ users.2.name }}
 </p>
@@ -29,6 +46,59 @@
         {% endif %}
     {% endfor %}
 </ul>
+<table class="table table-bordered table-hover">
+    <thead>
+        <th>id</th>
+        <th>账号</th>
+        <th>真实姓名</th>
+        <th>手机号</th>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            {# 轮训的方式选择后面的字符串 #}
+            <tr class="{% cycle "red" "blue" "green" %}" >
+{#             <tr {% ifequal forloop.counter 3 %}class="even" {% endifequal %}>#}
+{#            <tr {% ifequal forloop.counter | divisibleby:2 0 %} class="even" {% endifequal %}>#}
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.realprofile.real_name }}</td>
+                <td>{{ user.phone }}</td>
+            </tr>
+            {% comment %}
+            渲染模板后不会存在
+            {# 集合对象里面没有元素，但集合对象不能为none #}
+            {% endcomment %}
+            {% empty %}
+                <tr>
+                    <td colspan="4">无数据</td>
+                </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% autoescape off %}
+    {{ info }}
+{% endautoescape %}
+{% autoescape on %}
+    {{ info }}
+{% endautoescape %}
+<br>
+100的五分之一：
+{% widthratio 100 5 1 %}
+<p>
+    {{ now | date:"Y-M-d H:i:s A"}}
+</p>
+{% for path, f_stat in files.items %}
+    <p>
+    自定义filter--见mainapp/__init__.py
+    {{ path|ellipse }} 的文件大小 {{ f_stat.st_size | filesizeformat }}
+    </p>
+{% endfor %}
+<p>
+    {{ price|floatformat:2 }}
+</p>
+<p>
+    {{ img_html | safe}}
+</p>
 
 </body>
 </html>
